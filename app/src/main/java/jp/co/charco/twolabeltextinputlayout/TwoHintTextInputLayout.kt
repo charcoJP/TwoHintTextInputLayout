@@ -3,7 +3,6 @@ package jp.co.charco.twolabeltextinputlayout
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.EditText
-import androidx.core.view.postDelayed
 import com.google.android.material.textfield.TextInputLayout
 
 class TwoHintTextInputLayout @JvmOverloads constructor(
@@ -15,13 +14,19 @@ class TwoHintTextInputLayout @JvmOverloads constructor(
     init {
         initAttrs(attrs)
 
-        editText?.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {
-                postDelayed(167) {
-                    (view as EditText).hint = focusedHint
+        addOnEditTextAttachedListener {
+            editText?.setOnFocusChangeListener { view, hasFocus ->
+                if (hasFocus) {
+                    (view as EditText).apply {
+                        hint = focusedHint
+                        alpha = 0f
+                    }.animate().run {
+                        alpha(1f)
+                        duration = 167 // label の animation と同じ値
+                    }
+                } else {
+                    (view as EditText).hint = null
                 }
-            } else {
-                (view as EditText).hint = null
             }
         }
     }
